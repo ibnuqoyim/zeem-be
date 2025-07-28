@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 
@@ -60,9 +61,13 @@ func main() {
 		})
 	})
 
-	// Start HTTPS server
-	log.Println("Starting HTTPS server on :80")
-	if err := router.RunTLS(":80", "certs/cert.pem", "certs/key.pem"); err != nil {
-		log.Fatal("Failed to start HTTPS server: ", err)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000" // default saat development
+	}
+
+	log.Printf("Starting HTTP server on :%s\n", port)
+	if err := router.Run(":" + port); err != nil {
+		log.Fatal("Failed to start HTTP server: ", err)
 	}
 }
