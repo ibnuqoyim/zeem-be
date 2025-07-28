@@ -53,7 +53,7 @@ class WebRTCClient {
     async connectSignalingServer() {
         return new Promise((resolve, reject) => {
             // Always use secure WebSocket for HTTPS
-            const wsUrl = `wss://${window.location.hostname}:8443/ws?roomId=${this.roomId}&username=${this.username}`;
+            const wsUrl = `ws://${window.location.hostname}:3000/ws?roomId=${this.roomId}&username=${this.username}`;
             
             this.socket = new WebSocket(wsUrl);
 
