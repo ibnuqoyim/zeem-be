@@ -6,7 +6,7 @@ buildCommand = "go build -o bin/app cmd/server/main.go"
 startCommand = "./bin/app"
 healthcheckPath = "/health"
 healthcheckTimeout = 100
-restartPolicyType = "on-failure"
+restartPolicyType = "ON_FAILURE"
 
 [env]
 ENV = "production"
