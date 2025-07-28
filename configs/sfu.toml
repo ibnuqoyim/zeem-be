@@ -1,0 +1,26 @@
+[global]
+pprof = ":6060"
+
+# Core configurations
+[sfu]
+# Max bandwidth for receiving tracks in kbps
+maxbandwidth = 1500
+# Min bandwidth for receiving tracks in kbps
+minbandwidth = 200
+# The max number of tracks that can be forwarded to a single peer
+maxsubscribers = 50
+# The port range that should be used for RTP packets
+# Format: [min, max]
+portrange = [40000, 50000]
+
+[sfu.webrtc]
+# Range of ports that should be used for ICE
+# Format: [min, max]
+icePorts = [20000, 30000]
+# ICE servers
+[[sfu.webrtc.iceserver]]
+urls = ["stun:stun.l.google.com:19302"]
+
+# Log configurations
+[log]
+level = "info"

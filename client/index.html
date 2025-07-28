@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeem Video Conference</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+    <div class="join-container" id="joinForm">
+        <h2>Join Meeting</h2>
+        <div class="instructions">
+            <p>Please allow access to your camera and microphone when prompted.</p>
+            <p id="connectionStatus"></p>
+        </div>
+        <input type="text" id="username" placeholder="Your Name">
+        <input type="text" id="roomId" placeholder="Room ID">
+        <button id="joinButton" type="button">Join Room</button>
+        <div id="joinStatus" class="status-message hidden">
+            Connecting to room...
+        </div>
+    </div>        <div class="meeting-container hidden" id="meetingRoom">
+            <div class="video-grid" id="videoGrid"></div>
+            <div class="controls">
+                <button id="toggleVideo">Toggle Video</button>
+                <button id="toggleAudio">Toggle Audio</button>
+                <button id="shareScreen">Share Screen</button>
+                <button id="leaveRoom">Leave Room</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/webrtc.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
