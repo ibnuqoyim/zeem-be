@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -17,10 +19,18 @@ func main() {
 	// Load configuration
 	cfg := config.New()
 
+	// Configure logging
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	log.Printf("Starting application with config: Environment=%s, Port=%s\n", cfg.Environment, cfg.Port)
+
 	// Set Gin mode based on environment
 	if cfg.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	// Log allowed origins
+	log.Printf("Allowed origins: %v\n", cfg.AllowedOrigins)
 
 	// Initialize services
 	roomManager := services.NewRoomManager()
@@ -28,6 +38,21 @@ func main() {
 	wsHandler := handlers.NewWebSocketHandler(roomManager, webrtcManager)
 
 	router := gin.Default()
+
+	// Recovery middleware with logger
+	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+			param.ClientIP,
+			param.TimeStamp.Format(time.RFC1123),
+			param.Method,
+			param.Path,
+			param.Request.Proto,
+			param.StatusCode,
+			param.Latency,
+			param.Request.UserAgent(),
+			param.ErrorMessage,
+		)
+	}))
 
 	// Security headers middleware
 	router.Use(func(c *gin.Context) {

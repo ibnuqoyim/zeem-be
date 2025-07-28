@@ -1,13 +1,16 @@
 [build]
 builder = "nixpacks"
-buildCommand = "go build -o bin/app ./cmd/server"
+buildCommand = "CGO_ENABLED=0 GOOS=linux go build -o bin/app ./cmd/server"
 
 [deploy]
 startCommand = "./bin/app"
 healthcheckPath = "/health"
 healthcheckTimeout = 100
-restartPolicyType = "ON_FAILURE"
+restartPolicyType = "on_failure"
+healthcheckTimeout = 300
 
 [env]
 ENV = "production"
-ALLOWED_ORIGINS = "https://zeem-be-production.up.railway.app"  # Replace with your actual domain
+ALLOWED_ORIGINS = "https://zeem-be-production.up.railway.app"
+HOST = "0.0.0.0"
+GIN_MODE = "release"
