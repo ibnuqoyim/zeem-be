@@ -3,15 +3,23 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 
+	"zeem/internal/config"
 	"zeem/internal/handlers"
 	"zeem/internal/services"
 )
 
 func main() {
+	// Load configuration
+	cfg := config.New()
+
+	// Set Gin mode based on environment
+	if cfg.Environment == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	// Initialize services
 	roomManager := services.NewRoomManager()
 	webrtcManager := services.NewWebRTCManager()
@@ -21,8 +29,25 @@ func main() {
 
 	// Security headers middleware
 	router.Use(func(c *gin.Context) {
-		// Strict CORS policy
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // Allow all origins in development
+		origin := c.Request.Header.Get("Origin")
+		// CORS policy based on configuration
+		if cfg.Environment == "production" {
+			// In production, check against allowed origins
+			allowed := false
+			for _, allowedOrigin := range cfg.AllowedOrigins {
+				if allowedOrigin == "*" || allowedOrigin == origin {
+					allowed = true
+					break
+				}
+			}
+			if allowed {
+				c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			}
+		} else {
+			// In development, allow all
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		}
+
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
@@ -61,13 +86,9 @@ func main() {
 		})
 	})
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000" // default saat development
-	}
-
-	log.Printf("Starting HTTP server on :%s\n", port)
-	if err := router.Run("0.0.0.0:" + port); err != nil {
+	serverAddr := cfg.Host + ":" + cfg.Port
+	log.Printf("Starting HTTP server on %s in %s mode\n", serverAddr, cfg.Environment)
+	if err := router.Run(serverAddr); err != nil {
 		log.Fatal("Failed to start HTTP server: ", err)
 	}
 }
