@@ -6,8 +6,7 @@ buildCommand = "CGO_ENABLED=0 GOOS=linux go build -o bin/app ./cmd/server"
 startCommand = "./bin/app"
 healthcheckPath = "/health"
 healthcheckTimeout = 100
-restartPolicyType = "on_failure"
-healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
 
 [env]
 ENV = "production"
