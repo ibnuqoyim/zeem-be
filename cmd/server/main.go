@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/fs"
 	"log"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	"zeem/internal/config"
 	"zeem/internal/handlers"
 	"zeem/internal/services"
+	"zeem/internal/static"
 )
 
 func main() {
@@ -67,10 +69,15 @@ func main() {
 	})
 
 	// Serve static files
+	staticFiles, err := fs.Sub(static.StaticFiles, "client")
+	if err != nil {
+		log.Fatal("Failed to setup static files:", err)
+	}
+
 	router.NoRoute(func(c *gin.Context) {
 		if c.Request.Method == http.MethodGet {
 			c.Writer.Header().Add("Cache-Control", "no-cache")
-			http.FileServer(http.Dir("client")).ServeHTTP(c.Writer, c.Request)
+			http.FileServer(http.FS(staticFiles)).ServeHTTP(c.Writer, c.Request)
 			return
 		}
 		c.Next()
