@@ -61,8 +61,8 @@ func main() {
 	})
 
 	// Start HTTPS server
-	log.Println("Starting HTTPS server on :8443")
-	if err := router.RunTLS(":443", "certs/cert.pem", "certs/key.pem"); err != nil {
+	log.Println("Starting HTTPS server on :80")
+	if err := router.RunTLS(":80", "certs/cert.pem", "certs/key.pem"); err != nil {
 		log.Fatal("Failed to start HTTPS server: ", err)
 	}
 }
